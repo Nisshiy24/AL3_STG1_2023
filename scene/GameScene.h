@@ -30,11 +30,29 @@ public: // メンバ関数
 	/// </summary>
 	void Initialize();
 
+
+
+	//BG(スプライト)
+	uint32_t textureHandleBG_ = 0;
+	Sprite* spriteBG_ = nullptr;
+
+
+	//ビュープロジェクション（共通）
+	ViewProjection viewProjection_;
+
+	//ステージ
+	uint32_t textureHandleStage_ = 0;
+	Model* modelStage_ = nullptr;
+	WorldTransform worldTransformStage_;
+
+
+
+
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
-
+	
 	/// <summary>
 	/// 描画
 	/// </summary>
