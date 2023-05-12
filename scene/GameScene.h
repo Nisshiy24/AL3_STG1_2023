@@ -47,12 +47,40 @@ public: // メンバ関数
 
 
 
+	//プレイヤー
+	uint32_t textureHandlePlayer = 0;
+	Model* modelPlayer_ = nullptr;
+	WorldTransform worldTransformPlayer_;
+
+
+	uint32_t texturehandleBeam_ = 0;
+	Model* modelBeam = nullptr;
+	WorldTransform worldTransformBeam_;
+	
 
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
+	void PlayerUpdate();
 	
+	//ビーム更新
+	void BeamUpdate();
+
+
+	//ビーム移動
+	void BeamMove();
+
+
+	//ビーム発生
+	void BeamBorn();
+
+
+	int beamFlag_ = 0;
+
+
+
+
 	/// <summary>
 	/// 描画
 	/// </summary>
