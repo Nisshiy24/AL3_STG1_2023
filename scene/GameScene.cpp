@@ -2,6 +2,8 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "MathUtilityForText.h"
+ 
+
 
 //コンストラクタ
 GameScene::GameScene() {  }
@@ -82,7 +84,20 @@ void GameScene::Initialize() {
 		};
 	
 		worldTransformBeam_.Initialize();
+
+		
+		textureHandleEnemy_ = TextureManager::Load("enemy.png");
+	    modelEnemy_ = Model::Create();
+	    worldTransformEnemy_.scale_ = {
+	        0.5f,
+	        0.5f,
+	        0.5f,
+	    };
 	
+		worldTransformEnemy_.Initialize();
+
+
+		srand((unsigned int)time(NULL));
 
 }
 //更新
@@ -90,6 +105,9 @@ void GameScene::Update() {
 	PlayerUpdate();
 	//ビーム更新
 	BeamUpdate();
+
+	//敵更新
+	EnemyUpdate();
 }
 
 //プレイヤー更新
@@ -199,6 +217,66 @@ void GameScene::BeamBorn() {
 }
 
 
+//敵更新
+void GameScene::EnemyUpdate() {
+
+	//敵発生
+	EnemyMove();
+
+	//発生
+	EnemyBorm();
+
+		worldTransformEnemy_.matWorld_ = MakeAffineMatrix(
+	    worldTransformEnemy_.scale_, worldTransformEnemy_.rotation_,
+	    worldTransformEnemy_.translation_);
+
+	worldTransformEnemy_.TransferMatrix();
+
+}
+
+
+//敵移動
+void GameScene::EnemyMove() {
+
+	worldTransformEnemy_.translation_.z -= 0.5f;
+
+	worldTransformEnemy_.rotation_.x -= 0.1f;
+
+}
+
+void GameScene::EnemyBorm()
+{ 
+	if (enemyflag_ == 0)
+	{
+		worldTransformEnemy_.translation_.x = 0.0f;
+		worldTransformEnemy_.translation_.y = 0.0f;
+		worldTransformEnemy_.translation_.z = 40.0f;
+
+		enemyflag_ = 1;
+
+
+		// 乱数でX座標の指定
+		int x = rand() % 80;
+
+		// 80は4の10倍の2倍
+		float x2 = (float)x / 10 - 4;
+
+		// 10で割り、4を引く
+		worldTransformEnemy_.translation_.x = x2;
+	
+
+
+	}
+
+	
+		if (worldTransformEnemy_.translation_.z < -10) {
+		enemyflag_ = 0;
+	}
+	
+
+}
+
+
 //表示
 void GameScene::Draw() {
 
@@ -233,6 +311,12 @@ void GameScene::Draw() {
 
 		modelBeam->Draw(worldTransformBeam_, viewProjection_, texturehandleBeam_);
 	}
+
+
+	if (enemyflag_ == 1) {
+		modelBeam->Draw(worldTransformEnemy_, viewProjection_, textureHandleEnemy_);
+	}
+
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
