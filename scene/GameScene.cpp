@@ -99,6 +99,16 @@ void GameScene::Initialize() {
 
 		srand((unsigned int)time(NULL));
 
+
+
+
+		//デバッグテキスト
+	    debugText_ = DebugText::GetInstance();
+	    debugText_->Initialize();
+
+
+
+
 }
 //更新
 void GameScene::Update() { 
@@ -108,6 +118,8 @@ void GameScene::Update() {
 
 	//敵更新
 	EnemyUpdate();
+
+	Collision();
 }
 
 //プレイヤー更新
@@ -277,6 +289,64 @@ void GameScene::EnemyBorm()
 }
 
 
+void GameScene::Collision() {
+	//衝突判定（プレイヤーと敵）
+	CollisionPlayerEnemy();
+
+	CollisionBeamEnemy();
+}
+
+
+
+
+//衝突判定（プレイヤーと敵）
+void GameScene::CollisionPlayerEnemy() {
+	//敵が存在すれば
+	if (enemyflag_ == 1)
+	{
+		//差を求める
+		float dx = abs(worldTransformPlayer_.translation_.x - worldTransformEnemy_.translation_.x);
+		float dz = abs(worldTransformPlayer_.translation_.z - worldTransformEnemy_.translation_.z);
+
+		//衝突したら
+		if (dx < 1 && dz < 1)
+		{
+			//存在しない
+			enemyflag_ = 0;
+			playerLife--;
+			
+		}
+		
+	}
+}
+
+
+
+//衝突判定（ビームと敵）
+void GameScene::CollisionBeamEnemy() {
+
+	if (enemyflag_ == 1)
+	{
+		if (beamFlag_ == 1) {
+			float x = abs(worldTransformBeam_.translation_.x - worldTransformEnemy_.translation_.x);
+			float z = abs(worldTransformBeam_.translation_.z - worldTransformEnemy_.translation_.z);
+
+			if (x < 1 && z < 1) {
+				enemyflag_ = 0;
+				beamFlag_ = 0;
+				gameScore_++;
+			}
+		}
+
+	}
+
+}
+
+
+
+
+
+
 //表示
 void GameScene::Draw() {
 
@@ -284,10 +354,32 @@ void GameScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 #pragma region 背景スプライト描画
+	
+	
+
+
+	
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(commandList);
 
+
+	
 	spriteBG_->Draw();
+
+
+	//デバックテキスト
+	//debugText_->Print("AAA", 10, 10, 2);
+	debugText_->DrawAll();
+
+	// ゲームスコア
+	char str[100];
+	sprintf_s(str, "SCORE %d", gameScore_);
+	debugText_->Print(str, 200, 10, 2);
+
+	//プレイヤーHP
+	sprintf_s(str, "LIFE %d", playerLife);
+	debugText_->Print(str, 800, 10, 2);
+
 
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる

@@ -9,6 +9,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "time.h"
+#include "DebugText.h"
 
 /// <summary>
 /// ゲームシーン
@@ -63,6 +64,10 @@ public: // メンバ関数
 	uint32_t textureHandleEnemy_ = 0; 
 	Model* modelEnemy_ = nullptr;
 	WorldTransform worldTransformEnemy_;
+
+
+	
+	
 	
 
 	/// <summary>
@@ -100,6 +105,25 @@ public: // メンバ関数
 
 
 
+	//衝突判定
+	void Collision();
+
+	//衝突判定（プレイヤーと敵）
+	void CollisionPlayerEnemy();
+	
+	//衝突判定（ビームと敵）
+	void CollisionBeamEnemy();
+
+	//ゲームスコア
+	int gameScore_ = 0;
+
+	//プレイヤーライフ
+	int playerLife = 3;
+
+
+
+
+
 	/// <summary>
 	/// 描画
 	/// </summary>
@@ -109,6 +133,7 @@ private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
+	DebugText* debugText_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
