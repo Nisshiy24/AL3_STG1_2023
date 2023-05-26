@@ -137,10 +137,10 @@ public: // メンバ関数
 	int sceneMode_ = 0;
 
 
-	////タイトル更新
-	//void TitleUpdate();
-	////タイトル２D
-	//void TitleDraw2DNear();
+	//タイトル更新
+	void TitleUpdate();
+	//タイトル２D
+	void TitleDraw2DNear();
 
 
 
