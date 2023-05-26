@@ -121,6 +121,31 @@ public: // メンバ関数
 	int playerLife = 3;
 
 
+	//ゲームプレイ更新
+	void GamePlayUpdate();
+
+	//ゲームプレイ3Ð表示
+	void GamePlayDraw3D();
+
+	//ゲームプレイ背景２D表示
+	void GamePlayDraw2DBack();
+
+	//ゲームプレイ近景2D表示
+	void GamePlayDraw2DNear();
+
+
+	int sceneMode_ = 0;
+
+
+	////タイトル更新
+	//void TitleUpdate();
+	////タイトル２D
+	//void TitleDraw2DNear();
+
+
+
+
+
 
 
 

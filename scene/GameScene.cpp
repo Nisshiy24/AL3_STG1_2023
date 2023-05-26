@@ -111,15 +111,19 @@ void GameScene::Initialize() {
 
 }
 //更新
-void GameScene::Update() { 
-	PlayerUpdate();
-	//ビーム更新
-	BeamUpdate();
+void GameScene::Update() {
+	   
+	
 
-	//敵更新
-	EnemyUpdate();
+	//各シーンの更新処理を呼び出す
+	switch (sceneMode_)
+	{
+	case 0:
+		//ゲームプレイ更新
+		GamePlayUpdate();
+		break;
+	}
 
-	Collision();
 }
 
 //プレイヤー更新
@@ -156,6 +160,11 @@ void GameScene::PlayerUpdate() {
 	}
 
 
+
+
+
+
+	
 
 
 
@@ -346,6 +355,80 @@ void GameScene::CollisionBeamEnemy() {
 
 
 
+void GameScene::GamePlayUpdate(){
+
+	
+	// プレイヤー更新
+	PlayerUpdate();
+
+	// ビーム更新
+	BeamUpdate();
+
+	// 敵更新
+	EnemyUpdate();
+
+	// 衝突判定
+	Collision();
+
+
+
+	
+	
+	
+	
+}
+
+
+
+
+//ゲームプレイ表示３D
+void GameScene::GamePlayDraw3D() {
+
+	modelStage_->Draw(worldTransformStage_, viewProjection_, textureHandleStage_);
+
+	modelPlayer_->Draw(worldTransformPlayer_, viewProjection_, textureHandlePlayer);
+
+	if (beamFlag_ == 1) {
+
+		modelBeam->Draw(worldTransformBeam_, viewProjection_, texturehandleBeam_);
+	}
+
+	if (enemyflag_ == 1) {
+		modelBeam->Draw(worldTransformEnemy_, viewProjection_, textureHandleEnemy_);
+	}
+
+}
+
+
+
+
+
+
+//ゲームプレイ表示2D背景
+void GameScene::GamePlayDraw2DBack() {
+	//背景
+	spriteBG_->Draw();
+}
+
+
+
+//ゲームプレイ表示２D近景
+void GameScene::GamePlayDraw2DNear() {
+	// ゲームスコア
+	char str[100];
+	sprintf_s(str, "SCORE %d", gameScore_);
+	debugText_->Print(str, 200, 10, 2);
+
+	// プレイヤーHP
+	sprintf_s(str, "LIFE %d", playerLife);
+	debugText_->Print(str, 800, 10, 2);
+
+}
+
+
+
+
+
 
 //表示
 void GameScene::Draw() {
@@ -362,23 +445,22 @@ void GameScene::Draw() {
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(commandList);
 
-
 	
-	spriteBG_->Draw();
+	
+	switch (sceneMode_)
+	{ 
+	case 0:
+		GamePlayDraw2DBack();
+		break;
+
+	}
 
 
 	//デバックテキスト
 	//debugText_->Print("AAA", 10, 10, 2);
-	debugText_->DrawAll();
+	
 
-	// ゲームスコア
-	char str[100];
-	sprintf_s(str, "SCORE %d", gameScore_);
-	debugText_->Print(str, 200, 10, 2);
-
-	//プレイヤーHP
-	sprintf_s(str, "LIFE %d", playerLife);
-	debugText_->Print(str, 800, 10, 2);
+	
 
 
 	/// <summary>
@@ -395,19 +477,16 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
-	modelStage_->Draw(worldTransformStage_, viewProjection_, textureHandleStage_);
+	
+	
 
-	modelPlayer_->Draw(worldTransformPlayer_, viewProjection_, textureHandlePlayer);
+	switch (sceneMode_)
+	{ 
+	case 0:
+		GamePlayDraw3D();
+		break;
+		}
 
-	if (beamFlag_ == 1) {
-
-		modelBeam->Draw(worldTransformBeam_, viewProjection_, texturehandleBeam_);
-	}
-
-
-	if (enemyflag_ == 1) {
-		modelBeam->Draw(worldTransformEnemy_, viewProjection_, textureHandleEnemy_);
-	}
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
@@ -421,7 +500,17 @@ void GameScene::Draw() {
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(commandList);
 
-	
+
+
+	switch (sceneMode_)
+	{ 
+	case 0:
+		GamePlayDraw2DNear();
+		break;
+	}
+
+
+	debugText_->DrawAll();
 
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
