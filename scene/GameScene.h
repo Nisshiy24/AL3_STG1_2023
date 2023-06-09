@@ -66,6 +66,26 @@ public: // メンバ関数
 	WorldTransform worldTransformEnemy_;
 
 
+	//タイトル（スプライト）
+	uint32_t textureHandleTitle_ = 0;
+	Sprite* spriteTitle_ = nullptr;
+
+
+
+	//タイトルエンター
+	uint32_t texturehandleTitleEnter_ = 0;
+	Sprite* spriteTitleEnter_ = nullptr;
+
+
+
+	//ゲームオーバー
+	uint32_t textureGameover = 0;
+	Sprite* spriteGameover = nullptr;
+
+
+
+
+
 	
 	
 	
@@ -134,7 +154,7 @@ public: // メンバ関数
 	void GamePlayDraw2DNear();
 
 
-	int sceneMode_ = 0;
+	int sceneMode_ = 1;
 
 
 	//タイトル更新
@@ -142,6 +162,13 @@ public: // メンバ関数
 	//タイトル２D
 	void TitleDraw2DNear();
 
+
+	int gameTimer_ = 0;
+
+	//ゲームオーバー２D
+	void GameOverDraw2DNear();
+
+	void GamePlayStart();
 
 
 

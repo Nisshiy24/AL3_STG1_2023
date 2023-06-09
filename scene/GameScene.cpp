@@ -13,6 +13,10 @@ GameScene::~GameScene() {
 	delete spriteBG_;
 	delete modelStage_;
 	delete modelPlayer_;
+	delete spriteTitle_;
+	delete spriteTitleEnter_;
+	delete spriteGameover;
+
 }
 
 //初期化
@@ -108,6 +112,27 @@ void GameScene::Initialize() {
 
 
 
+		//タイトル（2Dスプライト）
+	    textureHandleTitle_ = TextureManager::Load("title.png");
+	    spriteTitle_ = Sprite::Create(textureHandleTitle_, {0, 0});
+
+
+		//タイトルエンター
+	    texturehandleTitleEnter_ = TextureManager::Load("enter.png");
+	    spriteTitleEnter_ = Sprite::Create(texturehandleTitleEnter_, {400, 400});
+
+
+		//ゲームオーバー
+	    textureGameover = TextureManager::Load("gameover.png");
+	    spriteGameover = Sprite::Create(textureGameover, {0, 0});
+
+
+
+
+
+
+
+
 
 }
 //更新
@@ -122,17 +147,25 @@ void GameScene::Update() {
 		//ゲームプレイ更新
 		GamePlayUpdate();
 		break;
+	case 1:
+		
+		//タイトル更新
+		TitleUpdate();
+		gameTimer_ += 1;
+		break;
+	case 2:
+		gameTimer_ += 1;
+		break;
+	
 	}
 
 }
 
 //プレイヤー更新
 void GameScene::PlayerUpdate() {
-	worldTransformPlayer_.matWorld_ = MakeAffineMatrix(
-	    worldTransformPlayer_.scale_, worldTransformPlayer_.rotation_,
-	    worldTransformPlayer_.translation_);
+	
+	
 
-	worldTransformPlayer_.TransferMatrix();
 
 
 	//右移動
@@ -162,7 +195,11 @@ void GameScene::PlayerUpdate() {
 
 
 
+	worldTransformPlayer_.matWorld_ = MakeAffineMatrix(
+	    worldTransformPlayer_.scale_, worldTransformPlayer_.rotation_,
+	    worldTransformPlayer_.translation_);
 
+	worldTransformPlayer_.TransferMatrix();
 
 	
 
@@ -370,6 +407,7 @@ void GameScene::GamePlayUpdate(){
 	// 衝突判定
 	Collision();
 
+	
 
 
 	
@@ -384,9 +422,7 @@ void GameScene::GamePlayUpdate(){
 //ゲームプレイ表示３D
 void GameScene::GamePlayDraw3D() {
 
-	modelStage_->Draw(worldTransformStage_, viewProjection_, textureHandleStage_);
-
-	modelPlayer_->Draw(worldTransformPlayer_, viewProjection_, textureHandlePlayer);
+	
 
 	if (beamFlag_ == 1) {
 
@@ -396,6 +432,16 @@ void GameScene::GamePlayDraw3D() {
 	if (enemyflag_ == 1) {
 		modelBeam->Draw(worldTransformEnemy_, viewProjection_, textureHandleEnemy_);
 	}
+
+
+
+	if (playerLife == 0) {
+		sceneMode_ = 2;
+	}
+
+	modelStage_->Draw(worldTransformStage_, viewProjection_, textureHandleStage_);
+
+	modelPlayer_->Draw(worldTransformPlayer_, viewProjection_, textureHandlePlayer);
 
 }
 
@@ -408,6 +454,9 @@ void GameScene::GamePlayDraw3D() {
 void GameScene::GamePlayDraw2DBack() {
 	//背景
 	spriteBG_->Draw();
+
+
+	
 }
 
 
@@ -423,7 +472,88 @@ void GameScene::GamePlayDraw2DNear() {
 	sprintf_s(str, "LIFE %d", playerLife);
 	debugText_->Print(str, 800, 10, 2);
 
+
+		
 }
+
+
+
+//タイトル更新
+void GameScene::TitleUpdate()
+{
+	
+		if (input_->TriggerKey(DIK_RETURN)) {
+			// モードをゲームプレイへ変更
+			sceneMode_ = 0;
+		    GamePlayStart();
+		}
+	
+
+
+	
+
+	
+
+}
+
+
+//タイトル表示
+void GameScene::TitleDraw2DNear() {
+
+	//タイトル表示
+	spriteTitle_->Draw();
+
+
+	
+	if (gameTimer_ % 40 >= 20) {
+		// タイトルエンター表示
+		spriteTitleEnter_->Draw();
+	}
+
+}
+
+
+
+//ゲームオーバー表示
+void GameScene::GameOverDraw2DNear() {
+	
+	
+
+		spriteGameover->Draw();
+
+		if (sceneMode_ == 2) {
+		if (input_->TriggerKey(DIK_RETURN)) {
+			sceneMode_ = 1;
+		}
+	    }
+
+
+		
+
+	    if (gameTimer_ % 40 >= 20) {
+		// タイトルエンター表示
+		spriteTitleEnter_->Draw();
+	    }
+	
+
+}
+
+
+
+void GameScene::GamePlayStart() {
+
+	playerLife = 3;
+	gameScore_ = 0;
+	worldTransformPlayer_.translation_.x = 0.0f;
+	worldTransformPlayer_.translation_.z = 0.0f;
+	enemyflag_ = 0;
+	beamFlag_ = 0;
+
+	GamePlayUpdate();
+
+
+}
+
 
 
 
@@ -450,6 +580,9 @@ void GameScene::Draw() {
 	switch (sceneMode_)
 	{ 
 	case 0:
+		GamePlayDraw2DBack();
+		break;
+	case 2:
 		GamePlayDraw2DBack();
 		break;
 
@@ -485,7 +618,10 @@ void GameScene::Draw() {
 	case 0:
 		GamePlayDraw3D();
 		break;
-		}
+	case 2:
+		GamePlayDraw3D();
+		break;
+	}
 
 
 	/// <summary>
@@ -506,6 +642,13 @@ void GameScene::Draw() {
 	{ 
 	case 0:
 		GamePlayDraw2DNear();
+		break;
+	case 1:
+		TitleDraw2DNear();
+		break;
+	case 2:
+		GamePlayDraw2DNear();
+		GameOverDraw2DNear();
 		break;
 	}
 
