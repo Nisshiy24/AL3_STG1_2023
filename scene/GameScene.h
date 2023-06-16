@@ -56,14 +56,14 @@ public: // メンバ関数
 
 	//ビーム
 	uint32_t texturehandleBeam_ = 0;
-	Model* modelBeam = nullptr;
-	WorldTransform worldTransformBeam_;
+	Model* modelBeam = 0;
+	WorldTransform worldTransformBeam_[10];
 
 
 	//敵
 	uint32_t textureHandleEnemy_ = 0; 
-	Model* modelEnemy_ = nullptr;
-	WorldTransform worldTransformEnemy_;
+	Model* modelEnemy_ = 0;
+	WorldTransform worldTransformEnemy_[10];
 
 
 	//タイトル（スプライト）
@@ -81,6 +81,8 @@ public: // メンバ関数
 	//ゲームオーバー
 	uint32_t textureGameover = 0;
 	Sprite* spriteGameover = nullptr;
+
+
 
 
 
@@ -108,7 +110,7 @@ public: // メンバ関数
 	void BeamBorn();
 
 
-	int beamFlag_ = 0;
+	int beamFlag_[10] = {};
 
 	//敵更新
 	void EnemyUpdate();
@@ -121,7 +123,7 @@ public: // メンバ関数
 
 
 	//敵フラグ
-	int enemyflag_ = 0;
+	int enemyflag_[10] = {};
 
 
 
@@ -169,6 +171,13 @@ public: // メンバ関数
 	void GameOverDraw2DNear();
 
 	void GamePlayStart();
+
+	//ビーム発射タイマー
+	int beamTimer_ = 0;
+
+	//敵スピード
+	float enemySpeed_[10] = {};
+
 
 
 

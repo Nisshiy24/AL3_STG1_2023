@@ -80,25 +80,30 @@ void GameScene::Initialize() {
 	
 		texturehandleBeam_ = TextureManager::Load("beam.png");
 	
-		modelBeam = Model::Create();
-		worldTransformBeam_.scale_ = {
-		    0.3f,
-		    0.3f,
-		    0.3f,
-		};
-	
-		worldTransformBeam_.Initialize();
+		for (int i = 0; i < 10; i++) {
 
+		    modelBeam = Model::Create();
+		    worldTransformBeam_[i].scale_ = {
+		        0.3f,
+		        0.3f,
+		        0.3f,
+		    };
+
+		    worldTransformBeam_[i].Initialize();
+	    }
 		
 		textureHandleEnemy_ = TextureManager::Load("enemy.png");
 	    modelEnemy_ = Model::Create();
-	    worldTransformEnemy_.scale_ = {
-	        0.5f,
-	        0.5f,
-	        0.5f,
-	    };
-	
-		worldTransformEnemy_.Initialize();
+		//敵の数ループする
+	    for (int i = 0; i < 10; i++) {
+		    worldTransformEnemy_[i].scale_ = {
+		        0.5f,
+		        0.5f,
+		        0.5f,
+		    };
+
+		    worldTransformEnemy_[i].Initialize();
+	    }
 
 
 		srand((unsigned int)time(NULL));
@@ -220,13 +225,13 @@ void GameScene::BeamUpdate() {
 	// ビーム発生
 	BeamBorn();
 
+	for (int i = 0; i < 10; i++) {
+		worldTransformBeam_[i].matWorld_ = MakeAffineMatrix(
+		    worldTransformBeam_[i].scale_, worldTransformBeam_[i].rotation_,
+		    worldTransformBeam_[i].translation_);
 
-	worldTransformBeam_.matWorld_ = MakeAffineMatrix(
-	    worldTransformBeam_.scale_, worldTransformBeam_.rotation_,
-	    worldTransformBeam_.translation_);
-
-	worldTransformBeam_.TransferMatrix();
-
+		worldTransformBeam_[i].TransferMatrix();
+	}
 	
 
 }
@@ -235,12 +240,14 @@ void GameScene::BeamUpdate() {
 
 void GameScene::BeamMove() {
 
-	
-		if (beamFlag_ == 1) {
-			worldTransformBeam_.translation_.z += 0.3f;
+	for (int i = 0; i < 10; i++) {
+
+		if (beamFlag_[i] == 1) {
+			worldTransformBeam_[i].translation_.z += 0.3f;
 		}
-	
-	worldTransformBeam_.rotation_.x += 0.1f;
+
+		worldTransformBeam_[i].rotation_.x += 0.1f;
+	}
 	
 }
 
@@ -249,25 +256,40 @@ void GameScene::BeamMove() {
 void GameScene::BeamBorn() {
 
 	if (input_->PushKey(DIK_SPACE)) {
-		if (beamFlag_ == 0) {
-		
-			worldTransformBeam_.translation_.x = worldTransformPlayer_.translation_.x;
-			worldTransformBeam_.translation_.y = worldTransformPlayer_.translation_.y;
-			worldTransformBeam_.translation_.z = worldTransformPlayer_.translation_.z;
+		for (int i = 0; i < 10; i++) {
+			if (beamFlag_[i] == 0) {
 
-			beamFlag_ = 1;
+				worldTransformBeam_[i].translation_.x = worldTransformPlayer_.translation_.x;
+				worldTransformBeam_[i].translation_.y = worldTransformPlayer_.translation_.y;
+				worldTransformBeam_[i].translation_.z = worldTransformPlayer_.translation_.z;
 
-		
-
-
+				// 発射タイマーが1ならば
+				if (beamTimer_ == 0) {
+					beamFlag_[i] = 1;
+					beamTimer_ = 1;
+					break;
+				} else {
+					//発射タイマーを1以上
+					//10を超えると再び発射が可能
+					beamTimer_++;
+					if (beamTimer_ > 10) {
+						beamTimer_ = 0;
+					
+					}
+				}
+			}
 		}
 	}
 	
-
-	if (worldTransformBeam_.translation_.z > 40)
-	{
-		beamFlag_ = 0;
+	for (int i = 0; i < 10; i++) {
+		if (worldTransformBeam_[i].translation_.z > 40) {
+			beamFlag_[i] = 0;
+		}
 	}
+
+	
+	
+	
 
 	
 
@@ -284,11 +306,13 @@ void GameScene::EnemyUpdate() {
 	//発生
 	EnemyBorm();
 
-		worldTransformEnemy_.matWorld_ = MakeAffineMatrix(
-	    worldTransformEnemy_.scale_, worldTransformEnemy_.rotation_,
-	    worldTransformEnemy_.translation_);
+	for (int i = 0; i < 10; i++) {
+		worldTransformEnemy_[i].matWorld_ = MakeAffineMatrix(
+		    worldTransformEnemy_[i].scale_, worldTransformEnemy_[i].rotation_,
+		    worldTransformEnemy_[i].translation_);
 
-	worldTransformEnemy_.TransferMatrix();
+		worldTransformEnemy_[i].TransferMatrix();
+	}
 
 }
 
@@ -296,42 +320,63 @@ void GameScene::EnemyUpdate() {
 //敵移動
 void GameScene::EnemyMove() {
 
-	worldTransformEnemy_.translation_.z -= 0.5f;
+	for (int i = 0; i < 10; i++) {
+		worldTransformEnemy_[i].translation_.z -= 0.5f;
 
-	worldTransformEnemy_.rotation_.x -= 0.1f;
+		worldTransformEnemy_[i].rotation_.x -= 0.1f;
+
+		worldTransformEnemy_[i].translation_.x += enemySpeed_[i];
+
+		if (worldTransformEnemy_[i].translation_.x > 4)
+		{
+			enemySpeed_[i] = -0.1f;
+		}
+
+		if (worldTransformEnemy_[i].translation_.x < -4)
+		{
+			enemySpeed_[i] = 0.1f;
+		}
+
+	}
 
 }
 
 void GameScene::EnemyBorm()
 { 
-	if (enemyflag_ == 0)
-	{
-		worldTransformEnemy_.translation_.x = 0.0f;
-		worldTransformEnemy_.translation_.y = 0.0f;
-		worldTransformEnemy_.translation_.z = 40.0f;
+	if (rand() % 10 == 0) {
+		for (int i = 0; i < 10; i++) {
+			if (enemyflag_[i] == 0) {
 
-		enemyflag_ = 1;
+				worldTransformEnemy_[i].translation_.x = 0.0f;
+				worldTransformEnemy_[i].translation_.y = 0.0f;
+				worldTransformEnemy_[i].translation_.z = 40.0f;
 
+				enemyflag_[i] = 1;
 
-		// 乱数でX座標の指定
-		int x = rand() % 80;
+				// 乱数でX座標の指定
+				int x = rand() % 80;
 
-		// 80は4の10倍の2倍
-		float x2 = (float)x / 10 - 4;
+				// 80は4の10倍の2倍
+				float x2 = (float)x / 10 - 4;
 
-		// 10で割り、4を引く
-		worldTransformEnemy_.translation_.x = x2;
-	
+				// 10で割り、4を引く
+				worldTransformEnemy_[i].translation_.x = x2;
 
+				//敵のスピード
+				if (rand() % 2 == 0) {
+					enemySpeed_[i] = 0.1f;
+				} else {
+					enemySpeed_[i] = -0.1f;
+				}
 
+				break;
+			}
+
+			if (worldTransformEnemy_[i].translation_.z < -10) {
+				enemyflag_[i] = 0;
+			}
+		}
 	}
-
-	
-		if (worldTransformEnemy_.translation_.z < -10) {
-		enemyflag_ = 0;
-	}
-	
-
 }
 
 
@@ -347,23 +392,25 @@ void GameScene::Collision() {
 
 //衝突判定（プレイヤーと敵）
 void GameScene::CollisionPlayerEnemy() {
-	//敵が存在すれば
-	if (enemyflag_ == 1)
-	{
-		//差を求める
-		float dx = abs(worldTransformPlayer_.translation_.x - worldTransformEnemy_.translation_.x);
-		float dz = abs(worldTransformPlayer_.translation_.z - worldTransformEnemy_.translation_.z);
+	
+	for (int i = 0; i < 10; i++) {
+		// 敵が存在すれば
+		if (enemyflag_[i] == 1) {
+			// 差を求める
+			float dx =
+			    abs(worldTransformPlayer_.translation_.x - worldTransformEnemy_[i].translation_.x);
+			float dz =
+			    abs(worldTransformPlayer_.translation_.z - worldTransformEnemy_[i].translation_.z);
 
-		//衝突したら
-		if (dx < 1 && dz < 1)
-		{
-			//存在しない
-			enemyflag_ = 0;
-			playerLife--;
-			
+			// 衝突したら
+			if (dx < 1 && dz < 1) {
+				// 存在しない
+				enemyflag_[i] = 0;
+				playerLife--;
+			}
 		}
-		
 	}
+
 }
 
 
@@ -371,19 +418,29 @@ void GameScene::CollisionPlayerEnemy() {
 //衝突判定（ビームと敵）
 void GameScene::CollisionBeamEnemy() {
 
-	if (enemyflag_ == 1)
-	{
-		if (beamFlag_ == 1) {
-			float x = abs(worldTransformBeam_.translation_.x - worldTransformEnemy_.translation_.x);
-			float z = abs(worldTransformBeam_.translation_.z - worldTransformEnemy_.translation_.z);
 
-			if (x < 1 && z < 1) {
-				enemyflag_ = 0;
-				beamFlag_ = 0;
-				gameScore_++;
+	for (int e = 0; e < 10; e++) {
+
+		if (enemyflag_[e] == 1) {
+
+			for (int b = 0; b < 10; b++)
+				{
+				if (beamFlag_[b] == 1) {
+					float x =
+					    abs(worldTransformBeam_[b].translation_.x -
+					        worldTransformEnemy_[e].translation_.x);
+					float z =
+					    abs(worldTransformBeam_[b].translation_.z -
+					        worldTransformEnemy_[e].translation_.z);
+
+					if (x < 1 && z < 1) {
+						enemyflag_[e] = 0;
+						beamFlag_[b] = 0;
+						gameScore_+= 1;
+					}
+				}
 			}
 		}
-
 	}
 
 }
@@ -424,14 +481,19 @@ void GameScene::GamePlayDraw3D() {
 
 	
 
-	if (beamFlag_ == 1) {
+	for (int i = 0; i < 10; i++) {
+		if (beamFlag_[i] == 1) {
 
-		modelBeam->Draw(worldTransformBeam_, viewProjection_, texturehandleBeam_);
+			modelBeam->Draw(worldTransformBeam_[i], viewProjection_, texturehandleBeam_);
+		}
 	}
 
-	if (enemyflag_ == 1) {
-		modelBeam->Draw(worldTransformEnemy_, viewProjection_, textureHandleEnemy_);
+	for (int i = 0; i < 10; i++) {
+		if (enemyflag_[i] == 1) {
+			modelBeam->Draw(worldTransformEnemy_[i], viewProjection_, textureHandleEnemy_);
+		}
 	}
+	
 
 
 
@@ -545,9 +607,13 @@ void GameScene::GamePlayStart() {
 	playerLife = 3;
 	gameScore_ = 0;
 	worldTransformPlayer_.translation_.x = 0.0f;
-	worldTransformPlayer_.translation_.z = 0.0f;
-	enemyflag_ = 0;
-	beamFlag_ = 0;
+	for (int i = 0; i < 10; i++)
+	{
+		enemyflag_[i] = 0;
+		beamFlag_[i] = 0;
+	}
+
+	gameTimer_ = 0;
 
 	GamePlayUpdate();
 
