@@ -44,8 +44,8 @@ public: // メンバ関数
 
 	//ステージ
 	uint32_t textureHandleStage_ = 0;
-	Model* modelStage_ = nullptr;
-	WorldTransform worldTransformStage_;
+	Model* modelStage_ = 0;
+	WorldTransform worldTransformStage_[20];
 
 
 
@@ -83,6 +83,37 @@ public: // メンバ関数
 	Sprite* spriteGameover = nullptr;
 
 
+
+	//サウンド
+
+	//タイトルBGM
+	uint32_t soundDataHandleTitleBGM_ = 0;
+	//ゲームプレイBGM
+	uint32_t soundDataHandleGamePlayBGM_ = 0;
+	//ゲームオーバーBGM
+	uint32_t soundDataHandleGameOverBGM_ = 0;
+	//敵ヒットSE
+	uint32_t soundDataHandleEnemyHitSE_ = 0;
+	//プレイヤーヒット
+	uint32_t soundDataHandkePlayerHitSE_ = 0;
+	//音声再生ハンドル
+	uint32_t voiceHandleBGM_ = 0;
+
+
+
+
+	//スコア数値（スプライト）
+	uint32_t textureHandleNumber_ = 0;
+	Sprite* spriteNumber_[5] = {};
+
+
+	//Score
+	uint32_t textureHandleScore_ = 0;
+	Sprite* sprieScore_ = nullptr;
+
+	//ライフ（2Dスプライト）
+	//uint32_t textureHandleLife_ = 0;
+	Sprite* spriteLife_[3] = {};
 
 
 
@@ -177,6 +208,20 @@ public: // メンバ関数
 
 	//敵スピード
 	float enemySpeed_[10] = {};
+
+	void StageUpdate();
+
+	//敵ジャンプの移動
+	float enemyJumpSpeed_[10] = {};
+
+	//敵のジャンプ
+	void EnemyJump();
+
+	//ゲームスコア
+	void DrawScore();
+
+	//プレイヤータイマー　
+	int playerTimer_ = 0;
 
 
 
