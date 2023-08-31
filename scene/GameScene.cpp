@@ -28,7 +28,7 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	//BG(2Dスプライト)
-	textureHandleBG_ = TextureManager::Load("bg.jpg");
+	textureHandleBG_ = TextureManager::Load("sumer2.png");
 	spriteBG_ = Sprite::Create(textureHandleBG_, {0, 0});
 
 	viewProjection_.Initialize();
@@ -126,7 +126,7 @@ void GameScene::Initialize() {
 
 
 		//タイトル（2Dスプライト）
-	    textureHandleTitle_ = TextureManager::Load("title.png");
+	    textureHandleTitle_ = TextureManager::Load("space shooter.png");
 	    spriteTitle_ = Sprite::Create(textureHandleTitle_, {0, 0});
 
 
@@ -234,6 +234,16 @@ void GameScene::PlayerUpdate() {
 		worldTransformPlayer_.translation_.x -= 0.1f;
 	}
 
+	if (input_->PushKey(DIK_UP)) {
+		worldTransformPlayer_.translation_.y += 0.1f;
+	}
+
+	if (input_->PushKey(DIK_DOWN)) {
+		worldTransformPlayer_.translation_.y -= 0.1f;
+	}
+
+	
+
 
 
 
@@ -246,6 +256,14 @@ void GameScene::PlayerUpdate() {
 
 	if (worldTransformPlayer_.translation_.x < -4) {
 		worldTransformPlayer_.translation_.x = -4;
+	}
+
+	if (worldTransformPlayer_.translation_.y > 3) {
+		worldTransformPlayer_.translation_.y = 3;
+	}
+
+	if (worldTransformPlayer_.translation_.y < 0) {
+		worldTransformPlayer_.translation_.y = 0;
 	}
 
 
@@ -424,8 +442,18 @@ void GameScene::EnemyBorm()
 				// 80は4の10倍の2倍
 				float x2 = (float)x / 10 - 4;
 
+
+				// 乱数でX座標の指定
+				int y = rand() % 80;
+
+				// 80は4の10倍の2倍
+				float y2 = (float)y / 10 - 3;
+
 				// 10で割り、4を引く
 				worldTransformEnemy_[i].translation_.x = x2;
+
+				// 10で割り、4を引く
+				worldTransformEnemy_[i].translation_.y = y2;
 
 				//敵のスピード
 				if (rand() % 2 == 0) {
@@ -466,9 +494,11 @@ void GameScene::CollisionPlayerEnemy() {
 			    abs(worldTransformPlayer_.translation_.x - worldTransformEnemy_[i].translation_.x);
 			float dz =
 			    abs(worldTransformPlayer_.translation_.z - worldTransformEnemy_[i].translation_.z);
+			float dy =
+			    abs(worldTransformPlayer_.translation_.y - worldTransformEnemy_[i].translation_.y);
 
 			// 衝突したら
-			if (dx < 1 && dz < 1) {
+			if (dx < 1 && dz < 1 && dy < 1) {
 				// 存在しない
 				enemyflag_[i] = 0;
 				playerLife--;
@@ -502,8 +532,11 @@ void GameScene::CollisionBeamEnemy() {
 					float z =
 					    abs(worldTransformBeam_[b].translation_.z -
 					        worldTransformEnemy_[e].translation_.z);
+					float y =
+					    abs(worldTransformBeam_[b].translation_.y -
+					        worldTransformEnemy_[e].translation_.y);
 
-					if (x < 1 && z < 1) {
+					if (x < 1 && z < 1 && y < 1) {
 						enemyflag_[e] = 2;
 						beamFlag_[b] = 0;
 						gameScore_+= 1;
@@ -640,7 +673,7 @@ void GameScene::TitleUpdate()
 			sceneMode_ = 0;
 		    GamePlayStart();
 
-
+			
 
 			//BGM切り替え
 
@@ -663,10 +696,12 @@ void GameScene::TitleUpdate()
 void GameScene::TitleDraw2DNear() {
 
 	//タイトル表示
+	
+
+	spriteBG_->Draw();
+	
 	spriteTitle_->Draw();
 
-	
-	
 	if (gameTimer_ % 40 >= 20) {
 		// タイトルエンター表示
 		spriteTitleEnter_->Draw();
